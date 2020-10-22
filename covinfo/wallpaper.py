@@ -4,9 +4,10 @@ from typing import Tuple, Optional, Union
 import pathlib
 import os
 import screeninfo
+import random
 from PIL import Image, ImageDraw, ImageFont
 
-from covinfo import RESOURCES_DIR, ROBOTO_TTF
+from covinfo import RESOURCES_DIR, ROBOTO_TTF, VIRUS_IMAGE_PATH
 
 
 def get_screen_width_and_height() -> Tuple[int, int]:
@@ -20,6 +21,35 @@ def get_screen_width_and_height() -> Tuple[int, int]:
     return img_width, img_height
 
 
+def decorate_virus(func):
+    def add_virus_images(img, text, virus_img: Union[pathlib.Path, str] = VIRUS_IMAGE_PATH,):
+        print("image received:")
+        print(type(img))
+        img_width, img_height = img.height, img.width
+
+        # load virus image
+        virus_img = pathlib.Path(virus_img)
+        virus_img = Image.open(str(virus_img.absolute()))
+        print(virus_img)
+
+        # parse text
+        number = int(float(text.split("\n")[0]))
+        print("Number",number)
+
+        # spread!
+        offset = 40
+        for i in range(number):
+            img.paste(virus_img, (random.randint(offset, img_height-offset), random.randint(offset, img_width-offset)), virus_img)
+
+        return img
+
+    def wrapper(*args, **kwargs):
+        img=func(*args, **kwargs)
+        return add_virus_images(img, kwargs["text"])
+
+    return wrapper
+
+@decorate_virus
 def make_wallpaper_with_text(text: str,
                              ttf_path: Union[pathlib.Path, str] = ROBOTO_TTF,
                              img_width: Optional[int] = None,
