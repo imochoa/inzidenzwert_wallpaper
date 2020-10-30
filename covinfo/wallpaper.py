@@ -6,7 +6,7 @@ import os
 import screeninfo
 from PIL import Image, ImageDraw, ImageFont
 
-from covinfo import RESOURCES_DIR, ROBOTO_TTF
+from covinfo import RESOURCES_DIR, DEFAULT_TTF_FONT
 
 
 def get_screen_width_and_height() -> Tuple[int, int]:
@@ -20,8 +20,21 @@ def get_screen_width_and_height() -> Tuple[int, int]:
     return img_width, img_height
 
 
+def make_background_img(img_width: int,
+                        img_height: int,
+                        bg_color: Tuple[int, int, int] = (0, 0, 0),
+                        ):
+    # Create image
+    if None in {img_width, img_height}:
+        img_width, img_height = get_screen_width_and_height()
+
+    img = Image.new('RGB',
+                    size=(img_width, img_height),
+                    color=bg_color)
+
+
 def make_wallpaper_with_text(text: str,
-                             ttf_path: Union[pathlib.Path, str] = ROBOTO_TTF,
+                             ttf_path: Union[pathlib.Path, str] = DEFAULT_TTF_FONT,
                              img_width: Optional[int] = None,
                              img_height: Optional[int] = None,
                              bg_color: Tuple[int, int, int] = (0, 0, 0),
